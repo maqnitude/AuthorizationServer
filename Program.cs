@@ -34,7 +34,8 @@ builder.Services.AddOpenIddict()
 
         options
             .SetAuthorizationEndpointUris("/connect/authorize")
-            .SetTokenEndpointUris("/connect/token");
+            .SetTokenEndpointUris("/connect/token")
+            .SetUserInfoEndpointUris("/connect/userinfo");
 
         options
             .AddEphemeralEncryptionKey()
@@ -47,7 +48,8 @@ builder.Services.AddOpenIddict()
         options
             .UseAspNetCore()
             .EnableAuthorizationEndpointPassthrough()
-            .EnableTokenEndpointPassthrough();
+            .EnableTokenEndpointPassthrough()
+            .EnableUserInfoEndpointPassthrough();
     });
 
 builder.Services.AddHostedService<TestData>();
@@ -58,12 +60,18 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
+else
+{
+    app.UseHsts();
+}
 
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapDefaultControllerRoute();
 

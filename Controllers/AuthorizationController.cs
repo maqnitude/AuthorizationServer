@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
@@ -38,7 +39,10 @@ namespace AuthorizationServer.Controllers
             var claims = new List<Claim>
             {
                 new Claim(OpenIddictConstants.Claims.Subject, result.Principal.Identity!.Name!),
-                new Claim("some-claim", "some-value").SetDestinations(OpenIddictConstants.Destinations.AccessToken)
+                new Claim("some-claim", "some-value")
+                    .SetDestinations(OpenIddictConstants.Destinations.AccessToken),
+                new Claim(OpenIddictConstants.Claims.Email, "some@email.com")
+                    .SetDestinations(OpenIddictConstants.Destinations.IdentityToken)
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
@@ -89,6 +93,21 @@ namespace AuthorizationServer.Controllers
 
             // Returning SignInResult will ask OpenIddict to issue appropriate access/identity token
             return SignIn(claimsPrincipal, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        }
+
+        [Authorize(AuthenticationSchemes = OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)]
+        [HttpGet("~/connect/userinfo")]
+        public async Task<IActionResult> Userinfo()
+        {
+            var claimsPrincipal = (await HttpContext.AuthenticateAsync(
+                OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)).Principal;
+
+            return Ok(new
+            {
+                Name = claimsPrincipal!.GetClaim(OpenIddictConstants.Claims.Subject),
+                Occupation = "Unemployed",
+                Age = 22
+            });
         }
     }
 }
