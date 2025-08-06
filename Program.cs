@@ -26,11 +26,11 @@ builder.Services.AddOpenIddict()
     })
     .AddServer(options =>
     {
-        options.AllowAuthorizationCodeFlow()
-            .RequireProofKeyForCodeExchange();
-
         options
-            .AllowClientCredentialsFlow();
+            .AllowAuthorizationCodeFlow()
+                .RequireProofKeyForCodeExchange()
+            .AllowClientCredentialsFlow()
+            .AllowRefreshTokenFlow();
 
         options
             .SetAuthorizationEndpointUris("/connect/authorize")

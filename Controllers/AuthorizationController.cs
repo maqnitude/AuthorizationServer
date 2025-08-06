@@ -86,6 +86,12 @@ namespace AuthorizationServer.Controllers
                 claimsPrincipal = (await HttpContext.AuthenticateAsync(
                     OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)).Principal!;
             }
+            else if (request.IsRefreshTokenGrantType())
+            {
+                // Retrieve claims principal stored in refresh token
+                claimsPrincipal = (await HttpContext.AuthenticateAsync(
+                    OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)).Principal!;
+            }
             else
             {
                 throw new InvalidOperationException("The specified grant type is not supported.");

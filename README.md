@@ -10,3 +10,17 @@ Updated for:
 ## Local Setup
 
 Use `libman` to restore the packages in `wwwroot/lib`.
+
+Trust HTTPS developement certificate:
+
+```
+dotnet dev-certs https --trust
+```
+
+Run the project with https profile:
+
+```
+dotnet run --launch-profile https
+```
+
+Test with `Postman`.
